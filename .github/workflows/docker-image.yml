@@ -21,7 +21,7 @@ jobs:
       run: echo "TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag "${{ secrets.DOCKER_USERNAME }}"/easy_game_server:${TIMESTAMP}
+      run: docker build . --file Dockerfile --tag "${{ secrets.DOCKER_USERNAME }}"/easy_game_server:${TIMESTAMP} --tag "${{ secrets.DOCKER_USERNAME }}"/easy_game_server:latest 
 
     - name: Push the Docker image
-      run: docker push "${{ secrets.DOCKER_USERNAME }}"/easy_game_server:${TIMESTAMP}
+      run: docker push -a "${{ secrets.DOCKER_USERNAME }}"/easy_game_server
