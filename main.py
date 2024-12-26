@@ -95,7 +95,7 @@ def get_friends():
         session_keys.pop(session_key)
         return {"status": "error", "error": "session key expired"}
     if username not in friends:
-        logger.warning(f"User {username} has no friend")
+        logger.warning(f"User {username} has no friends")
         return {"status": "success", "friends": {}}
     data = {}
     for friend in friends[username]:
@@ -114,6 +114,30 @@ def get_friends():
         data[friend] = statuses[friend]["text"]
 
     return {"status": "success", "friends": data}
+
+@app.route("/api/add-friend")
+def add_friend():
+    global friends, session_keys
+    session_key = flask.request.args.get("session_key")
+    friend = flask.request.args.get("friend")
+    if session_key is None or friend is None:
+        return {"status": "error", "error": "a session key and friend must be provided"}
+    if session_key not in session_keys:
+        logger.warning(f"The session key {session_key} is invalid")
+        return {"status": "error", "error": "invalid session key"}
+    username = session_keys[session_key]["username"]
+    if int(time.time()) - session_keys[session_key]["time_stamp"] > 43200:
+        logger.warning(f"The session key {session_key} for user {username} expired")
+        session_keys.pop(session_key)
+        return {"status": "error", "error": "session key expired"}
+    if friend not in hashed_passwords:
+        logger.warning(f"User {username} wants to add the friend {friend} but it does not exist")
+        return {"status": "error", "error": "friend not found"}
+    if username not in friends:
+        friends[username] = []
+    friends[username].append(friend)
+    save_data()
+    return {"status": "success"}
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=6500, debug=True)
