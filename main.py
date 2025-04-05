@@ -26,7 +26,7 @@ friends = {}
 def save_data():
     global friends, hashed_passwords
     with open(os.path.join(data_path, "credentials.json"), "wt") as cf:
-        json.dump(friends, cf)
+        json.dump(hashed_passwords, cf)
     with open(os.path.join(data_path, "friends.json"), "wt") as ff:
         json.dump(friends, ff)
 
